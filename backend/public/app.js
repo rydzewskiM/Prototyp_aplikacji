@@ -1,5 +1,5 @@
 
-const BUILD_VERSION = "BookFlow Commerce Suite 3.3.3";
+const BUILD_VERSION = "BookFlow Commerce Suite 3.3.4";
 const state = { user: null, books: [], cart: [], bestsellers: [], orders: [], lastOrder: null, pendingPayment: false, adminUsers: [], salesReport: null };
 
 const el = (id) => document.getElementById(id);
@@ -250,6 +250,19 @@ function renderOrders() {
 function renderSession() {
   el("sessionInfo").textContent = state.user ? `Status sesji: zalogowano jako ${state.user.name} (${state.user.role === "admin" ? "administrator" : "klient"})` : "Status sesji: użytkownik jest wylogowany";
   if (state.user?.email) el("buyerEmail").value = state.user.email;
+  const registerTabBtn = el("registerTabBtn");
+  const registerTab = el("registerTab");
+  const shouldShowRegister = !state.user;
+  if (registerTabBtn) registerTabBtn.style.display = shouldShowRegister ? "" : "none";
+  if (registerTab) registerTab.style.display = shouldShowRegister ? "" : "none";
+  if (!shouldShowRegister && registerTab?.classList.contains("active")) {
+    registerTab.classList.remove("active");
+    const cartTab = el("cartTab");
+    if (cartTab) cartTab.classList.add("active");
+    document.querySelectorAll(".tabs-nav .tab-btn").forEach((btn) => btn.classList.remove("active"));
+    const firstBtn = document.querySelector('.tabs-nav .tab-btn[data-tab="cartTab"]');
+    if (firstBtn) firstBtn.classList.add("active");
+  }
   renderOrders();
 }
 
