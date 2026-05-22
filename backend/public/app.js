@@ -1,5 +1,5 @@
 
-const BUILD_VERSION = "BookFlow Commerce Suite 3.3.4";
+const BUILD_VERSION = "BookFlow Commerce Suite 3.3.5";
 const state = { user: null, books: [], cart: [], bestsellers: [], orders: [], lastOrder: null, pendingPayment: false, adminUsers: [], salesReport: null };
 
 const el = (id) => document.getElementById(id);
@@ -252,7 +252,7 @@ function renderSession() {
   if (state.user?.email) el("buyerEmail").value = state.user.email;
   const registerTabBtn = el("registerTabBtn");
   const registerTab = el("registerTab");
-  const shouldShowRegister = !state.user;
+  const shouldShowRegister = !state.user || state.user.role === "admin";
   if (registerTabBtn) registerTabBtn.style.display = shouldShowRegister ? "" : "none";
   if (registerTab) registerTab.style.display = shouldShowRegister ? "" : "none";
   if (!shouldShowRegister && registerTab?.classList.contains("active")) {
