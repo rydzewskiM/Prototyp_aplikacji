@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookFlow Commerce Suite 3.3.3.1</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div>
+        <div class="pill">Platforma sprzedaży książek • Wersja 3.3.1.1</div>
+        <h1>BookFlow Commerce Suite</h1>
+        <p>Profesjonalny panel sprzedaży książek z wyszukiwaniem pełnotekstowym i wektorowym, chatbotem pomocowym, obsługą zamówień oraz dokumentami PDF.</p>
+        <div class="stats" id="topStats"></div>
+      </div>
+      <div class="panel auth-panel">
+        <div class="auth-block">
+          <h3>Logowanie</h3>
+          <input id="loginEmail" value="admin@bookflow.pl" placeholder="Adres email" />
+          <input id="loginPassword" type="password" value="admin123" placeholder="Hasło" />
+          <div class="auth-actions">
+            <button id="loginBtn">Zaloguj</button>
+            <button id="logoutBtn" class="secondary">Wyloguj</button>
+          </div>
+        </div>
+        <div class="muted" id="sessionInfo">Status sesji: użytkownik jest wylogowany</div>
+        <div id="actionStatus" class="status-banner info" style="display:none"></div>
+        <div class="muted">Demo admin: admin@bookflow.pl / admin123<br/>Demo klient: klient@bookflow.pl / klient123<br/>Rejestracja klienta jest dostępna w zakładce Centrum klienta</div>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h2>Bestsellery</h2>
+      <div class="grid grid-4" id="bestsellers"></div>
+    </section>
+
+    <section class="panel hub-panel">
+      <div class="section-head">
+        <div>
+          <h2>Centrum klienta</h2>
+          <p class="muted-dark">Koszyk, pomoc zakupowa i historia zamówień w jednym, uporządkowanym miejscu.</p>
+        </div>
+      </div>
+
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="cartTab">Koszyk</button>
+        <button class="tab-btn" data-tab="chatTab">Pomoc zakupowa</button>
+        <button class="tab-btn" data-tab="historyTab">Historia zamówień</button>
+        <button class="tab-btn" data-tab="registerTab">Rejestracja</button>
+      </div>
+
+      <div class="tab-pane active" id="cartTab">
+        <div class="tab-grid">
+          <section class="soft-panel">
+            <h3>Koszyk</h3>
+            <div id="cart"></div>
+            <div class="row-col">
+              <input id="buyerEmail" placeholder="Email klienta" value="klient@email.pl" />
+              <input id="buyerNip" placeholder="NIP nabywcy (opcjonalnie)" />
+              <select id="paymentMethod"><option>BLIK</option><option>Karta</option><option>Przelew online</option></select>
+            </div>
+            <div class="checkout">
+              <div>Do zapłaty: <strong id="cartTotal">0,00 zł</strong></div>
+              <button id="checkoutBtn">Złóż zamówienie</button>
+            </div>
+          </section>
+
+          <section class="soft-panel" id="orderSummaryPanel" style="display:none">
+            <h3>Ostatnio złożone zamówienie / szczegóły</h3>
+            <div id="orderSummary"></div>
+          </section>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="chatTab">
+        <section class="soft-panel">
+          <h3>Pomoc zakupowa</h3>
+          <div id="chatLog" class="chatlog"></div>
+          <div class="row-col">
+            <input id="chatInput" placeholder="Np. poleć bestseller fantasy albo coś Cobena" />
+            <div class="chat-actions">
+              <button id="chatBtn">Zapytaj</button>
+              <button id="chatClearBtn" class="secondary">Wyczyść pole</button>
+              <button id="chatResetBtn" class="secondary">Nowa rozmowa</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="tab-pane" id="historyTab">
+        <section class="soft-panel" id="ordersPanel" style="display:none">
+          <div class="section-head">
+            <div>
+              <h3 id="ordersTitle">Historia zamówień</h3>
+              <p class="muted-dark" id="ordersSubtitle">W tym miejscu zobaczysz wszystkie swoje zamówienia.</p>
+            </div>
+            <div class="history-stats" id="ordersStats"></div>
+          </div>
+          <div id="orders"></div>
+        </section>
+        <section class="soft-panel history-empty" id="ordersEmptyPanel">
+          <h3>Historia zamówień</h3>
+          <p class="muted-dark">Zaloguj się, aby zobaczyć historię zamówień klienta lub administratora.</p>
+        </section>
+      </div>
+
+      <div class="tab-pane" id="registerTab">
+        <section class="soft-panel register-pane">
+          <div class="section-head">
+            <div>
+              <h3>Rejestracja użytkownika</h3>
+              <p class="muted-dark">Utwórz konto klienta i uzupełnij dane niezbędne do wysyłki zamówienia.</p>
+            </div>
+          </div>
+          <div class="register-grid">
+            <input id="registerName" placeholder="Imię i nazwisko" />
+            <input id="registerEmail" placeholder="Adres email" />
+            <input id="registerPassword" type="password" placeholder="Hasło" />
+            <input id="registerStreet" placeholder="Ulica i numer domu" />
+            <input id="registerApartment" placeholder="Numer mieszkania (opcjonalnie)" />
+            <div class="form-grid-2">
+              <input id="registerCity" placeholder="Miasto" />
+              <input id="registerPostalCode" placeholder="Kod pocztowy" />
+            </div>
+            <input id="registerPhone" placeholder="Numer telefonu klienta" />
+          </div>
+          <div class="register-actions">
+            <button id="registerBtn">Utwórz konto</button>
+          </div>
+        </section>
+      </div>
+
+    </section>
+
+    <section class="panel admin-panel" id="adminPanel" style="display:none">
+      <div class="section-head">
+        <div>
+          <h2>Panel administratora</h2>
+          <p class="muted-dark">Zarządzanie zarejestrowanymi użytkownikami oraz prosty raport sprzedaży według wybranej daty.</p>
+        </div>
+      </div>
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="adminUsersTab">Użytkownicy</button>
+        <button class="tab-btn" data-tab="adminReportTab">Raport sprzedaży</button>
+      </div>
+
+      <div class="tab-pane active" id="adminUsersTab">
+        <section class="soft-panel">
+          <h3>Zarejestrowani użytkownicy</h3>
+          <div id="adminUsers"></div>
+        </section>
+      </div>
+
+      <div class="tab-pane" id="adminReportTab">
+        <section class="soft-panel">
+          <div class="section-head">
+            <div>
+              <h3>Raport sprzedaży za wybraną datę</h3>
+              <p class="muted-dark">Wybierz datę sprzedaży, aby zobaczyć liczbę zamówień i wartość sprzedaży.</p>
+            </div>
+          </div>
+          <div class="row">
+            <input id="salesReportDate" type="date" />
+            <button id="salesReportBtn">Pokaż raport</button>
+          </div>
+          <div id="salesReport"></div>
+        </section>
+      </div>
+    </section>
+
+
+    <section class="panel books-panel">
+      <div class="row">
+        <input id="searchInput" placeholder="Szukaj po tytule, autorze albo gatunku" />
+        <select id="genreFilter"><option value="">Wszystkie gatunki</option><option>Kryminał</option><option>Fantasy</option><option>Horror</option></select>
+        <button id="searchBtn">Szukaj</button>
+      </div>
+      <div class="grid grid-3" id="books"></div>
+    </section>
+
+    <div id="modal" class="modal hidden">
+      <div class="modal-card">
+        <button class="close" id="closeModal">×</button>
+        <div id="modalContent"></div>
+      </div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

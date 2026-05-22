@@ -1,0 +1,36 @@
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: bookflow-vector-postgres
+    environment:
+      POSTGRES_DB: bookflow
+      POSTGRES_USER: bookflow
+      POSTGRES_PASSWORD: bookflow
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bookflow -d bookflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: ./backend
+    container_name: bookflow-vector-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 8080
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: bookflow
+      POSTGRES_USER: bookflow
+      POSTGRES_PASSWORD: bookflow
+      SESSION_SECRET: bookflow-vector-secret
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
