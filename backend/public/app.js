@@ -1,5 +1,5 @@
 
-const BUILD_VERSION = "BookFlow Commerce Suite 3.3.5";
+const BUILD_VERSION = "BookFlow Commerce Suite 3.3.12";
 const state = { user: null, books: [], cart: [], bestsellers: [], orders: [], lastOrder: null, pendingPayment: false, adminUsers: [], salesReport: null };
 
 const el = (id) => document.getElementById(id);
