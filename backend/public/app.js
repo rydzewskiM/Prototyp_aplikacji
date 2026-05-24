@@ -1,5 +1,5 @@
 
-const BUILD_VERSION = "BookFlow Commerce Suite 3.3.12";
+const BUILD_VERSION = "BookFlow Commerce Suite 3.3.15";
 const state = { user: null, books: [], cart: [], bestsellers: [], orders: [], lastOrder: null, pendingPayment: false, adminUsers: [], salesReport: null };
 
 const el = (id) => document.getElementById(id);
@@ -31,6 +31,21 @@ function closeModal() {
   document.body.style.top = "";
   window.scrollTo(0, savedScrollY || 0);
 }
+
+function showConfirmModal(title, message) {
+  openModal(`
+    <div class="detail-grid">
+      <div>
+        <h3>${title}</h3>
+        <p class="meta" style="margin-top:8px;">${message}</p>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:18px;">
+        <button onclick="closeModal()">OK</button>
+      </div>
+    </div>
+  `);
+}
+
 
 function orderNo() { return `ORD/${new Date().getFullYear()}/${Math.floor(Math.random()*9000)+1000}`; }
 function receiptNo() { return `PAR/${new Date().getFullYear()}/${Math.floor(Math.random()*900000)+100000}`; }
@@ -344,10 +359,13 @@ function pushChat(role, text) {
   el("chatLog").scrollTop = el("chatLog").scrollHeight;
 }
 function showStatus(message, type = "info") {
-  const box = el("actionStatus");
-  box.textContent = message;
-  box.className = `status-banner ${type}`;
-  box.style.display = "block";
+  ["actionStatus", "actionStatusCart"].forEach((id) => {
+    const box = document.getElementById(id);
+    if (!box) return;
+    box.textContent = message;
+    box.className = `status-banner ${type}`;
+    box.style.display = "block";
+  });
 }
 
 async function loadBooks() {
@@ -414,14 +432,23 @@ async function loadSession() {
 
 window.addToCart = function(id) {
   const book = [...state.books, ...state.bestsellers].find(b => b.id === id);
-  if (!book || !book.available || book.stock <= 0) return;
+  if (!book || !book.available || book.stock <= 0) {
+    showStatus("Nie można dodać artykułu do Koszyka.", "error");
+    return;
+  }
   const found = state.cart.find(i => i.id === id);
   if (found) {
+    if (found.qty >= book.stock) {
+      showStatus("Nie można dodać artykułu do Koszyka.", "error");
+      return;
+    }
     found.qty = Math.min(found.qty + 1, book.stock);
   } else {
     state.cart.push({ ...book, qty: 1 });
   }
   renderCart();
+  showStatus("Artykuł dodano do Koszyka.", "success");
+  showConfirmModal("Potwierdzenie", "Artykuł dodano do Koszyka.");
 }
 
 window.changeQty = function(id, delta) {
@@ -584,11 +611,20 @@ window.payOrder = async function(orderNo) {
 }
 
 async function checkout() {
-  if (!state.user) return alert("Najpierw zaloguj się.");
-  if (!state.cart.length) return alert("Koszyk jest pusty.");
+  if (!state.user) {
+    showStatus("Nie można zatwierdzić. Najpierw zaloguj się.", "error");
+    return;
+  }
+  if (!state.cart.length) {
+    showStatus("Nie można zatwierdzić. Koszyk jest pusty.", "error");
+    return;
+  }
   const buyerEmail = el("buyerEmail").value.trim();
   const buyerNip = el("buyerNip").value.trim();
-  if (!buyerEmail) return alert("Podaj adres email klienta.");
+  if (!buyerEmail) {
+    showStatus("Nie można zatwierdzić. Podaj adres email klienta.", "error");
+    return;
+  }
   const payload = {
     orderNo: orderNo(),
     receiptNo: receiptNo(),
@@ -602,7 +638,7 @@ async function checkout() {
     customerName: state.user.name
   };
   const { res, data } = await api("/api/orders", { method: "POST", body: JSON.stringify(payload) });
-  if (!res.ok) return alert(data?.error || "Nie udało się zapisać zamówienia.");
+  if (!res.ok) return showStatus(data?.error || "Nie można zatwierdzić zamówienia.", "error");
   state.lastOrder = { ...(data.order || payload), paymentDone: false };
   state.orders = [{ ...(data.order || payload), paymentDone: false }, ...state.orders];
   state.cart = [];
@@ -611,7 +647,8 @@ async function checkout() {
   renderCart();
   renderOrders();
   renderLastOrder();
-  showStatus("Zamówienie zostało zapisane. Aby rozpocząć realizację, wymagana jest płatność.", "info");
+  showStatus("Zatwierdzono. Aby rozpocząć realizację, wymagana jest płatność.", "success");
+  showConfirmModal("Potwierdzenie", "Zatwierdzono. Aby rozpocząć realizację, wymagana jest płatność.");
   await loadBooks();
   await loadBestsellers();
 }
